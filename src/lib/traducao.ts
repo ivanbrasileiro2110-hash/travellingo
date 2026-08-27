@@ -22,7 +22,7 @@ export const AUTO: Idioma = {
 
 export function buscarIdioma(codigo: string): Idioma {
   if (codigo === AUTO.codigo) return AUTO;
-  return IDIOMAS.find((i) => i.codigo === codigo) ?? IDIOMAS[0];
+  return IDIOMAS.find((i) => i.codigo === codigo) ?? IDIOMAS[0]!;
 }
 
 /* ------------------------------------------------------------------ */
