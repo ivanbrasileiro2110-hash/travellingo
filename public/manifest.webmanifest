@@ -1,0 +1,25 @@
+{
+  "name": "TravelLingo",
+  "short_name": "TravelLingo",
+  "description": "Tradutor de viagem por texto, voz e câmera com idiomas offline.",
+  "start_url": "/",
+  "id": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f4fbfa",
+  "theme_color": "#0e9f9a",
+  "icons": [
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
