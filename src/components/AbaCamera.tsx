@@ -16,7 +16,7 @@ export function AbaCamera() {
     if (!arquivo) return;
     setPrevia(URL.createObjectURL(arquivo));
     setProcessando(true);
-    const texto = await extrairTextoImagem(arquivo);
+    const texto = await extrairTextoImagem(arquivo, origem.codigo);
     setExtraido(texto);
     setResultado(await traduzirTexto(texto, origem.codigo, destino.codigo));
     setProcessando(false);
