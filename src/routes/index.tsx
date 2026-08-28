@@ -11,13 +11,13 @@ import { ModalConfiguracoes } from "@/components/ModalConfiguracoes";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "TravelLingo — Tradutor de viagem offline" },
+      { title: "Travelingo — Tradutor de viagem offline" },
       {
         name: "description",
         content:
           "Traduza texto, voz e fotos em português, inglês, árabe, coreano e japonês, mesmo offline.",
       },
-      { property: "og:title", content: "TravelLingo — Tradutor de viagem offline" },
+      { property: "og:title", content: "Travelingo — Tradutor de viagem offline" },
       {
         property: "og:description",
         content: "Tradução por texto, voz e câmera para viajantes, com idiomas offline.",
@@ -49,7 +49,7 @@ function Pagina() {
       <div className="mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 px-4 pb-10 pt-5">
         <header className="flex items-center gap-2">
           <h1 className="text-lg font-bold tracking-tight text-foreground">
-            Travel<span className="text-primary">Lingo</span>
+            Travel<span className="text-primary">ingo</span>
           </h1>
           <span
             className={`ml-auto inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${
