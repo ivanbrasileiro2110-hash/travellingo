@@ -44,7 +44,10 @@ export async function reconhecerVoz(): Promise<string> {
   return "Texto reconhecido (placeholder)";
 }
 
-export async function extrairTextoImagem(_arquivo: File): Promise<string> {
+export async function extrairTextoImagem(
+  _arquivo: File,
+  _idioma?: string,
+): Promise<string> {
   await new Promise((r) => setTimeout(r, 800));
   return "Texto extraído da imagem (placeholder)";
 }
