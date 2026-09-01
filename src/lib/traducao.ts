@@ -25,29 +25,19 @@ export function buscarIdioma(codigo: string): Idioma {
   return IDIOMAS.find((i) => i.codigo === codigo) ?? IDIOMAS[0]!;
 }
 
-/* ------------------------------------------------------------------ */
-/* Tradução de texto — modelos Helsinki-NLP OPUS-MT rodando localmente */
-/* via Transformers.js (open source, sem custo, sem servidor).        */
-/*                                                                     */
-/* Cada par de idiomas usa um modelo dedicado. Como nem todo par tem   */
-/* modelo direto, pares que não envolvem inglês fazem "pivô": traduz   */
-/* origem → inglês → destino em dois passos.                          */
-/* ------------------------------------------------------------------ */
+const MODELO_ID = "Xenova/nllb-200-distilled-600M";
 
-const MODELOS: Record<string, string[]> = {
-  "ar-en": ["Xenova/opus-mt-ar-en"],
-  "en-ar": ["Xenova/opus-mt-en-ar"],
-  "ja-en": ["Xenova/opus-mt-ja-en"],
-  "en-ja": ["Xenova/opus-mt-en-ja"],
-  "ko-en": ["Xenova/opus-mt-ko-en"],
-  "en-ko": ["Xenova/opus-mt-en-ko"],
-  "pt-en": ["Xenova/opus-mt-pt-en", "Xenova/opus-mt-tc-big-pt-en"],
-  "en-pt": ["Xenova/opus-mt-en-pt", "Xenova/opus-mt-tc-big-en-pt"],
+const NLLB_LOCALE: Record<string, string> = {
+  pt: "por_Latn",
+  en: "eng_Latn",
+  ar: "arb_Arab",
+  ko: "kor_Hang",
+  ja: "jpn_Jpan",
 };
 
-const pipelinesCache = new Map<string, Promise<any>>();
+let pipelinePromise: Promise<any> | null = null;
 
-type OuvinteProgresso = (par: string, progresso: number) => void;
+type OuvinteProgresso = (progresso: number) => void;
 const ouvintesProgresso = new Set<OuvinteProgresso>();
 
 export function aoProgredirModelo(fn: OuvinteProgresso): () => void {
@@ -55,51 +45,29 @@ export function aoProgredirModelo(fn: OuvinteProgresso): () => void {
   return () => ouvintesProgresso.delete(fn);
 }
 
-async function carregarPipeline(par: string) {
-  if (pipelinesCache.has(par)) return pipelinesCache.get(par)!;
+async function carregarPipeline() {
+  if (pipelinePromise) return pipelinePromise;
 
-  const candidatos = MODELOS[par];
-  if (!candidatos) {
-    throw new Error(`Nenhum modelo configurado para o par de idiomas "${par}".`);
-  }
+  pipelinePromise = (async () => {
+    const { pipeline } = await import("@huggingface/transformers");
+    const arquivosProgresso: Record<string, number> = {};
 
-  const promessa = (async () => {
-    const { pipeline, env } = await import("@huggingface/transformers");
-    env.allowLocalModels = false;
-
-    let ultimoErro: unknown;
-    for (const modeloId of candidatos) {
-      try {
-        const arquivosProgresso: Record<string, number> = {};
-        return await pipeline("translation", modeloId, {
-          progress_callback: (info: any) => {
-            if (info?.status === "progress" && info.file) {
-              arquivosProgresso[info.file] = info.progress ?? 0;
-              const valores = Object.values(arquivosProgresso);
-              const media =
-                valores.reduce((a, b) => a + b, 0) / (valores.length || 1);
-              ouvintesProgresso.forEach((fn) => fn(par, Math.round(media)));
-            }
-          },
-        });
-      } catch (erro) {
-        ultimoErro = erro;
-      }
-    }
-    throw ultimoErro instanceof Error
-      ? ultimoErro
-      : new Error(`Falha ao carregar modelo para "${par}".`);
+    return await pipeline("translation", MODELO_ID, {
+      dtype: { encoder_model: "q8", decoder_model_merged: "q8" },
+      device: "wasm",
+      progress_callback: (info: any) => {
+        if (info?.status === "progress" && info.file) {
+          arquivosProgresso[info.file] = info.progress ?? 0;
+          const valores = Object.values(arquivosProgresso);
+          const media =
+            valores.reduce((a, b) => a + b, 0) / (valores.length || 1);
+          ouvintesProgresso.forEach((fn) => fn(Math.round(media)));
+        }
+      },
+    } as any);
   })();
 
-  pipelinesCache.set(par, promessa);
-  return promessa;
-}
-
-async function traduzirPar(texto: string, par: string): Promise<string> {
-  const tradutor = await carregarPipeline(par);
-  const saida: any = await tradutor(texto);
-  const item = Array.isArray(saida) ? saida[0] : saida;
-  return item?.translation_text ?? texto;
+  return pipelinePromise;
 }
 
 const FRANC_PARA_CODIGO: Record<string, string> = {
@@ -110,10 +78,23 @@ const FRANC_PARA_CODIGO: Record<string, string> = {
   jpn: "ja",
 };
 
+function detectarPorScript(texto: string): string | null {
+  if (/[\u0600-\u06FF\u0750-\u077F]/.test(texto)) return "ar";
+  if (/[\uAC00-\uD7AF\u1100-\u11FF]/.test(texto)) return "ko";
+  if (/[\u3040-\u30FF\u4E00-\u9FFF]/.test(texto)) return "ja";
+  return null;
+}
+
 async function detectarIdioma(texto: string): Promise<string> {
+  const porScript = detectarPorScript(texto);
+  if (porScript) return porScript;
+
   try {
     const { franc } = await import("franc-min");
-    const resultado = franc(texto, { minLength: 3 });
+    const resultado = franc(texto, {
+      minLength: 1,
+      only: ["por", "eng", "arb", "kor", "jpn"],
+    });
     return FRANC_PARA_CODIGO[resultado] ?? "en";
   } catch {
     return "en";
@@ -130,27 +111,19 @@ export async function traduzirTexto(
   const src = origem === AUTO.codigo ? await detectarIdioma(texto) : origem;
   if (src === destino) return texto;
 
-  if (src === "en" || destino === "en") {
-    return traduzirPar(texto, `${src}-${destino}`);
-  }
-
-  const intermediario = await traduzirPar(texto, `${src}-en`);
-  return traduzirPar(intermediario, `en-${destino}`);
+  const tradutor = await carregarPipeline();
+  const saida: any = await tradutor(texto, {
+    src_lang: NLLB_LOCALE[src] ?? "eng_Latn",
+    tgt_lang: NLLB_LOCALE[destino] ?? "eng_Latn",
+  });
+  const item = Array.isArray(saida) ? saida[0] : saida;
+  return item?.translation_text ?? texto;
 }
 
-/* ------------------------------------------------------------------ */
-/* Reconhecimento de voz — placeholder mantido por enquanto (próxima  */
-/* etapa: precisa gravar áudio de verdade, então mexe também no       */
-/* componente AbaVoz).                                                */
-/* ------------------------------------------------------------------ */
 export async function reconhecerVoz(): Promise<string> {
   await new Promise((r) => setTimeout(r, 800));
   return "Texto reconhecido (placeholder)";
 }
-
-/* ------------------------------------------------------------------ */
-/* Tradução por foto (OCR) — Tesseract.js, open source, roda local.   */
-/* ------------------------------------------------------------------ */
 
 const TESSERACT_IDIOMA: Record<string, string> = {
   pt: "por",
@@ -182,10 +155,6 @@ export async function extrairTextoImagem(
   }
 }
 
-/* ------------------------------------------------------------------ */
-/* Texto para fala — Web Speech API nativa do navegador/SO.           */
-/* ------------------------------------------------------------------ */
-
 const TTS_LOCALE: Record<string, string> = {
   pt: "pt-BR",
   en: "en-US",
@@ -204,33 +173,13 @@ export function falarTexto(texto: string, idioma: string): void {
   window.speechSynthesis.speak(utterance);
 }
 
-/* ------------------------------------------------------------------ */
-/* Download antecipado dos modelos de um idioma (pra usar offline).   */
-/* ------------------------------------------------------------------ */
-
 export async function baixarIdioma(
-  codigo: string,
+  _codigo: string,
   aoProgredir: (p: number) => void,
 ): Promise<void> {
-  if (codigo === "en") {
-    aoProgredir(100);
-    return;
-  }
-
-  const pares = [`${codigo}-en`, `en-${codigo}`];
-  const progressoPares: Record<string, number> = {};
-
-  const remover = aoProgredirModelo((par, p) => {
-    if (!pares.includes(par)) return;
-    progressoPares[par] = p;
-    const media =
-      pares.reduce((soma, ppar) => soma + (progressoPares[ppar] ?? 0), 0) /
-      pares.length;
-    aoProgredir(Math.round(media));
-  });
-
+  const remover = aoProgredirModelo(aoProgredir);
   try {
-    await Promise.all(pares.map((par) => carregarPipeline(par)));
+    await carregarPipeline();
     aoProgredir(100);
   } finally {
     remover();
