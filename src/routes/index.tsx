@@ -50,13 +50,13 @@ function Pagina() {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 px-4 pb-10 pt-5">
-        <header className="flex items-center gap-2">
-          <h1 className="text-lg font-bold tracking-tight text-foreground">
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col gap-5 px-4 pb-10">
+        <header className="material-glass sticky top-0 z-30 -mx-4 flex items-center gap-2 border-b border-border px-4 pb-3 pt-5">
+          <h1 className="text-[34px] font-bold leading-tight tracking-[-0.02em] text-foreground">
             Travel<span className="text-primary">ingo</span>
           </h1>
           <span
-            className={`ml-auto inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+            className={`ml-auto inline-flex items-center gap-1 rounded-[10px] px-2.5 py-1 text-[13px] font-medium ${
               online
                 ? "bg-primary/10 text-primary"
                 : "bg-muted text-muted-foreground"
@@ -69,7 +69,7 @@ function Pagina() {
             type="button"
             aria-label="Configurações de idiomas"
             onClick={() => setConfig(true)}
-            className="rounded-full p-2 text-muted-foreground transition-colors hover:bg-accent/50"
+            className="rounded-full p-2 text-primary transition-colors hover:bg-accent"
           >
             <Settings className="size-5" />
           </button>
@@ -77,16 +77,16 @@ function Pagina() {
 
         <SeletorIdioma aoAbrirConfig={() => setConfig(true)} />
 
-        <nav className="grid grid-cols-3 gap-1 rounded-2xl bg-secondary p-1">
+        <nav className="grid grid-cols-3 gap-1 rounded-[10px] bg-secondary p-[3px]">
           {ABAS.map(({ id, rotulo, icone: Icone }) => (
             <button
               key={id}
               type="button"
               onClick={() => setAba(id)}
-              className={`flex items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-medium transition-colors ${
+              className={`flex items-center justify-center gap-1.5 rounded-[8px] py-1.5 text-[13px] font-medium transition-spring transition-all ${
                 aba === id
-                  ? "bg-card text-primary shadow-soft"
-                  : "text-muted-foreground"
+                  ? "scale-100 bg-background text-foreground shadow-segment"
+                  : "scale-[0.97] text-muted-foreground"
               }`}
             >
               <Icone className="size-4" />
