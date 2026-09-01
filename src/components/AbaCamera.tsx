@@ -36,7 +36,7 @@ export function AbaCamera() {
       <button
         type="button"
         onClick={() => inputRef.current?.click()}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-brand py-4 text-sm font-semibold text-primary-foreground shadow-elevated"
+        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-[17px] font-semibold text-primary-foreground transition-spring transition-all active:scale-[0.97]"
       >
         <Camera className="size-5" />
         Tirar foto
@@ -47,15 +47,15 @@ export function AbaCamera() {
           src={previa}
           alt="Prévia da foto tirada"
           loading="lazy"
-          className="w-full rounded-2xl border border-border object-cover shadow-soft"
+          className="w-full rounded-2xl object-cover shadow-soft"
         />
       )}
 
-      <div className="rounded-2xl border border-border bg-card p-4 shadow-soft">
-        <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+      <div className="rounded-2xl bg-card p-4">
+        <span className="text-[13px] font-medium text-muted-foreground">
           Texto extraído
         </span>
-        <p className="mt-1 text-base text-foreground">
+        <p className="mt-1 text-[17px] text-foreground">
           {processando ? (
             <Loader2 className="size-4 animate-spin text-primary" />
           ) : (
@@ -64,18 +64,18 @@ export function AbaCamera() {
         </p>
       </div>
 
-      <div className="flex items-start gap-3 rounded-2xl border border-border bg-secondary/60 p-4 shadow-soft">
+      <div className="flex items-start gap-3 rounded-2xl bg-card p-4">
         <div className="flex-1">
-          <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+          <span className="text-[13px] font-medium text-muted-foreground">
             Tradução
           </span>
-          <p className="mt-1 text-base text-foreground">{resultado || "—"}</p>
+          <p className="mt-1 text-[17px] text-foreground">{resultado || "—"}</p>
         </div>
         <button
           type="button"
           aria-label="Ouvir tradução"
           onClick={() => falarTexto(resultado, destino.codigo)}
-          className="rounded-full bg-card p-2 text-primary shadow-soft"
+          className="rounded-full bg-background p-2 text-primary shadow-soft"
         >
           <Volume2 className="size-4" />
         </button>

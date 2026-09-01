@@ -22,14 +22,14 @@ export function AbaTexto() {
         onChange={(e) => setTexto(e.target.value)}
         placeholder="Digite o texto para traduzir..."
         rows={6}
-        className="w-full resize-none rounded-2xl border border-border bg-card p-4 text-base text-foreground shadow-soft outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring"
+        className="w-full resize-none rounded-2xl bg-card p-4 text-[17px] text-foreground outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-ring"
       />
 
       <button
         type="button"
         onClick={traduzir}
         disabled={!texto.trim() || carregando}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-brand py-3.5 text-sm font-semibold text-primary-foreground shadow-elevated transition-opacity disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-[17px] font-semibold text-primary-foreground transition-spring transition-all active:scale-[0.97] disabled:opacity-40"
       >
         {carregando ? (
           <Loader2 className="size-4 animate-spin" />
@@ -40,13 +40,13 @@ export function AbaTexto() {
       </button>
 
       {resultado && (
-        <div className="flex items-start gap-3 rounded-2xl border border-border bg-secondary/60 p-4 shadow-soft">
-          <p className="flex-1 text-base text-foreground">{resultado}</p>
+        <div className="flex items-start gap-3 rounded-2xl bg-card p-4">
+          <p className="flex-1 text-[17px] text-foreground">{resultado}</p>
           <button
             type="button"
             aria-label="Ouvir tradução"
             onClick={() => falarTexto(resultado, destino.codigo)}
-            className="rounded-full bg-card p-2 text-primary shadow-soft"
+            className="rounded-full bg-background p-2 text-primary shadow-soft"
           >
             <Volume2 className="size-4" />
           </button>

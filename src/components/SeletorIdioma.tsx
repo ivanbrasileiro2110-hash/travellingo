@@ -21,18 +21,18 @@ function Dropdown({
       <button
         type="button"
         onClick={() => setAberto((a) => !a)}
-        className="w-full rounded-2xl border border-border bg-card px-3 py-3 text-left shadow-soft transition-colors hover:bg-accent/40"
+        className="w-full rounded-2xl bg-card px-3.5 py-3 text-left transition-spring transition-all active:scale-[0.98]"
       >
-        <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        <span className="text-[13px] font-medium text-muted-foreground">
           {rotulo}
         </span>
-        <span className="mt-1 flex items-center gap-2">
+        <span className="mt-1.5 flex items-center gap-2">
           {selecionado.codigo === AUTO.codigo ? (
             <Sparkles className="size-4 text-primary" />
           ) : (
             <span className="text-lg leading-none">{selecionado.bandeira}</span>
           )}
-          <span className="truncate text-sm font-semibold text-foreground">
+          <span className="truncate text-[17px] font-semibold text-foreground">
             {selecionado.nome}
           </span>
           <ChevronDown className="ml-auto size-4 shrink-0 text-muted-foreground" />
@@ -42,7 +42,7 @@ function Dropdown({
       {aberto && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setAberto(false)} />
-          <ul className="absolute z-20 mt-2 w-full overflow-hidden rounded-2xl border border-border bg-popover shadow-elevated">
+          <ul className="absolute z-20 mt-2 w-full overflow-hidden rounded-2xl bg-popover shadow-elevated">
             {opcoes.map((op) => (
               <li key={op.codigo}>
                 <button
@@ -51,7 +51,7 @@ function Dropdown({
                     aoSelecionar(op.codigo);
                     setAberto(false);
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-2.5 text-left text-sm text-popover-foreground transition-colors hover:bg-accent/50"
+                  className="flex w-full items-center gap-2 px-3.5 py-3 text-left text-[17px] text-popover-foreground transition-colors hover:bg-accent"
                 >
                   {op.codigo === AUTO.codigo ? (
                     <Sparkles className="size-4 text-primary" />
@@ -93,7 +93,7 @@ export function SeletorIdioma({ aoAbrirConfig }: { aoAbrirConfig: () => void }) 
           type="button"
           onClick={inverter}
           aria-label="Inverter idiomas"
-          className="mt-2 size-11 shrink-0 self-center rounded-full bg-gradient-brand text-primary-foreground shadow-elevated transition-transform active:scale-95"
+          className="mt-2 size-11 shrink-0 self-center rounded-full bg-primary text-primary-foreground shadow-soft transition-spring transition-transform active:scale-90"
         >
           <ArrowLeftRight className="mx-auto size-5" />
         </button>
@@ -109,7 +109,7 @@ export function SeletorIdioma({ aoAbrirConfig }: { aoAbrirConfig: () => void }) 
         <button
           type="button"
           onClick={aoAbrirConfig}
-          className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground"
+          className="inline-flex items-center gap-1.5 rounded-[10px] bg-card px-3 py-1.5 text-[13px] font-medium text-primary"
         >
           <Download className="size-3.5" />
           Baixar idioma ({faltando.map((f) => f.nome).join(", ")})
