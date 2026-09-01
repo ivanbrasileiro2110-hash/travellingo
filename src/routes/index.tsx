@@ -26,12 +26,16 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: () => (
+  component: RotaIndex,
+});
+
+function RotaIndex() {
+  return (
     <TraducaoProvider>
       <Pagina />
     </TraducaoProvider>
-  ),
-});
+  );
+}
 
 const ABAS = [
   { id: "texto", rotulo: "Texto", icone: Type },
