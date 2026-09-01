@@ -28,10 +28,10 @@ export function AbaVoz() {
         type="button"
         onClick={alternar}
         aria-label={gravando ? "Parar gravação" : "Iniciar gravação"}
-        className={`relative flex size-40 items-center justify-center rounded-full shadow-elevated transition-transform active:scale-95 ${
+        className={`relative flex size-40 items-center justify-center rounded-full shadow-soft transition-spring transition-transform active:scale-95 ${
           gravando
             ? "animate-pulse bg-destructive text-destructive-foreground"
-            : "bg-gradient-brand text-primary-foreground"
+            : "bg-primary text-primary-foreground"
         }`}
       >
         {gravando && (
@@ -40,30 +40,30 @@ export function AbaVoz() {
         <Mic className="size-14" />
       </button>
 
-      <p className="text-sm text-muted-foreground">
+      <p className="text-[17px] text-muted-foreground">
         {gravando ? "Ouvindo..." : "Toque para falar"}
       </p>
 
       <div className="w-full space-y-3">
-        <div className="min-h-16 rounded-2xl border border-border bg-card p-4 shadow-soft">
-          <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        <div className="min-h-16 rounded-2xl bg-card p-4">
+          <span className="text-[13px] font-medium text-muted-foreground">
             Reconhecido
           </span>
-          <p className="mt-1 text-base text-foreground">{reconhecido || "—"}</p>
+          <p className="mt-1 text-[17px] text-foreground">{reconhecido || "—"}</p>
         </div>
 
-        <div className="flex min-h-16 items-start gap-3 rounded-2xl border border-border bg-secondary/60 p-4 shadow-soft">
+        <div className="flex min-h-16 items-start gap-3 rounded-2xl bg-card p-4">
           <div className="flex-1">
-            <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            <span className="text-[13px] font-medium text-muted-foreground">
               Tradução
             </span>
-            <p className="mt-1 text-base text-foreground">{resultado || "—"}</p>
+            <p className="mt-1 text-[17px] text-foreground">{resultado || "—"}</p>
           </div>
           <button
             type="button"
             aria-label="Ouvir tradução"
             onClick={() => falarTexto(resultado, destino.codigo)}
-            className="rounded-full bg-card p-2 text-primary shadow-soft"
+            className="rounded-full bg-background p-2 text-primary shadow-soft"
           >
             <Volume2 className="size-4" />
           </button>
